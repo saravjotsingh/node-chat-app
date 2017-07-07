@@ -16,17 +16,23 @@ io.on('connection',(socket)=>{
     console.log('new connection');
     
     
-    socket.emit('newMessage',{
-        from:'Saravjot Singh',
-        text:"kidddaa???",
-        At:new Date()   
-    });
+//    socket.emit('newMessage',{
+//        from:'Saravjot Singh',
+//        text:"kidddaa???",
+//        At:new Date()   
+//    });
     
     
     socket.on('createMessage',(data)=>{
         console.log('Create message');
         console.log(data);
-    })
+        io.emit('newMessage',{
+            from:data.from,
+            text:data.text,
+            at:new Date().getTime()
+        });
+        
+    });
     
     
     socket.on('disconnect',()=>{

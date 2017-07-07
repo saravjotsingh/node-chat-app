@@ -15,10 +15,6 @@ socket.on('disconnect', function () {
     console.log("server disconnected");
 });
 
-socket.emit('createMessage',{
-    from:"Sahil",
-    text:'vadia tu sna'
-})
 
 
 
