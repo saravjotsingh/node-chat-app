@@ -6,31 +6,50 @@ var socket = io();
 socket.on('connect', function () {
     console.log('Connect to Server');
 
-    
-     socket.on('newMessage', function (data) {
-//        console.log('New message arrived');
-//        console.log(data);
-         
-         var formattedTime = moment(data.At).format('h:mm a');
 
-        var li = jQuery('<li></li>');
-        li.text(`${data.from} ${formattedTime}: ${data.text}`);
+    socket.on('newMessage', function (data) {
 
-        jQuery('#messages').append(li)
+
+        var formattedTime = moment(data.At).format('h:mm a');
+
+//        var li = jQuery('<li></li>');
+//        li.text(`${data.from} ${formattedTime}: ${data.text}`);
+//
+//        jQuery('#messages').append(li)
+        
+        var template = jQuery('#message-template').html();
+        var html = Mustache.render(template,{
+            text:data.text,
+            from:data.from,
+            At:formattedTime
+        });
+        
+        
+        jQuery('#messages').append(html)
     });
 
 });
 
 socket.on('newLocationMessage', function (data) {
-    
+
     var formattedTime = moment(data.At).format('h:mm a');
 
-    var li = jQuery('<li></li>');
-    var a = jQuery('<a target="_blank">My Current Location</a>')
-    li.text(`${data.from} ${formattedTime}: `);
-    a.attr('href', data.url);
-    li.append(a);
-    jQuery('#messages').append(li);
+//    var li = jQuery('<li></li>');
+//    var a = jQuery('<a target="_blank">My Current Location</a>')
+//    li.text(`${data.from} ${formattedTime}: `);
+//    a.attr('href', data.url);
+//    li.append(a);
+//    jQuery('#messages').append(li);
+var template = jQuery("#location-message-template").html();
+    
+    var html = Mustache.render(template,{
+        from:data.from,
+        url:data.url,
+        At:formattedTime
+    });
+    
+    jQuery('#messages').append(html);
+
 });
 
 
@@ -51,7 +70,7 @@ jQuery('#message-form').on('submit', function (e) {
         text: jQuery('[name=message]').val()
     }, function () {
         jQuery('[name=message]').val('');
-        
+
     });
 
 
@@ -63,8 +82,8 @@ locationButton.on('click', function () {
         return alert('Geolocation is not supported by your browser');
     }
 
-    locationButton.attr('disabled','disabled').text('Sending Location...');
-    
+    locationButton.attr('disabled', 'disabled').text('Sending Location...');
+
     navigator.geolocation.getCurrentPosition(function (position) {
         locationButton.removeAttr('disabled').text('Send Location');
         socket.emit('getLocationMessage', {
